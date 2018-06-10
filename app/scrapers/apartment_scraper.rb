@@ -27,9 +27,8 @@ class ApartmentScraper
       
       candidates.each do |panel|
         main_a = panel.css('a.detailansicht')
-        byebug
         ad_link = main_a.xpath("@href").first.to_s
-        ad_title = main_a.inner_text.first
+        ad_title = main_a.children.first.inner_text.strip
         maybe_inform(ad_title, ad_link)
       end
     end

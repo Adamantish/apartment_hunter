@@ -47,9 +47,9 @@ class ApartmentScraper
       ad_link = "#{@domain}/#{link}"
       apt = Apartment.find_or_initialize_by(ad_link: "#{@domain}/#{link}")
       unless apt.persisted?
+        tell(ad_link) if @tell
         MainMailer.new_scam(title: title, link: link).deliver_now
         apt.update!(ad_title: title)
-        tell(ad_link) if @tell
       end
     end
   end

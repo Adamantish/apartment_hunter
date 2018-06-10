@@ -5,6 +5,7 @@ task :scrape do
   Rails.application.initialize!
   
   2.times do
+    # ApartmentScraper.go(tell: true, noisy: true)
     ApartmentScraper.go
     sleep 60 * 3
   end

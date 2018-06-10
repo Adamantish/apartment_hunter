@@ -6,10 +6,11 @@ class ApartmentScraper
       @voice = 'Daniel'
 
       @domain = 'https://www.wg-gesucht.de'
-      url = "#{@domain}/wg-zimmer-in-Berlin.8.0.1.0.html?offer_filter=1&noDeact=1&city_id=8&category=0&rent_type=0&sMin=14&rMax=500&dFr=1529964000&dTo=1532383200&ot%5B132%5D=132&ot%5B85079%5D=85079&ot%5B151%5D=151&ot%5B163%5D=163&ot%5B165%5D=165&ot%5B178%5D=178&wgSea=2&wgAge=33&sin=1"
+      url = "#{@domain}/wg-zimmer-in-Berlin.8.0.0.0.html?offer_filter=1&noDeact=1&city_id=8&category=0&rent_type=0&sMin=15&rMax=500&dFr=1529964000&dTo=1532383200&ot%5B132%5D=132&ot%5B85079%5D=85079&ot%5B151%5D=151&ot%5B163%5D=163&ot%5B165%5D=165&wgSea=2&wgAge=33&sin=1"
       doc = Nokogiri::HTML(HTTParty.get(url))
 
       panels = doc.css('#main_column > .list-details-ad-border:not(.panel-hidden) .list-details-panel-inner')
+      scrape_record = Scrape.create!
       candidates = panels.select do |panel|
         begin
           possible_end_date = panel.css('b').last.inner_text
@@ -24,13 +25,19 @@ class ApartmentScraper
           false
         end
       end
-      
+
+      scrape_record.ads = candidates.count
+
+      @new_count = 0
+
       candidates.each do |panel|
         main_a = panel.css('a.detailansicht')
         ad_link = main_a.xpath("@href").first.to_s
         ad_title = main_a.children.first.inner_text.strip
         maybe_inform(ad_title, ad_link)
       end
+
+      scrape_record.update!(new_ads: @new_count)
     end
 
     def tell(message, time = nil)
@@ -48,6 +55,7 @@ class ApartmentScraper
       apt = Apartment.find_or_initialize_by(ad_link: "#{@domain}/#{link}")
 
       unless apt.persisted?
+        @new_count += 1
         puts ad_link
         MainMailer.new_scam(title: title, link: ad_link).deliver_now
         tell(ad_link) if @tell

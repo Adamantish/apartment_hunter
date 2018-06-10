@@ -27,6 +27,7 @@ class ApartmentScraper
       
       candidates.each do |panel|
         main_a = panel.css('a.detailansicht')
+        byebug
         ad_link = main_a.xpath("@href").first.to_s
         ad_title = main_a.inner_text.first
         maybe_inform(ad_title, ad_link)
@@ -49,7 +50,7 @@ class ApartmentScraper
 
       unless apt.persisted?
         puts ad_link
-        MainMailer.new_scam(title: title, link: link).deliver_now
+        MainMailer.new_scam(title: title, link: ad_link).deliver_now
         tell(ad_link) if @tell
         apt.update!(ad_title: title)
       end

@@ -1,8 +1,8 @@
 class MainMailer < ApplicationMailer
 
-  def new_scam(details)
-    @@my_email ||= Person.find_by(name: 'ME').email
+  def new_scam(email, details)
+    
     @details = details
-    mail(to: @@my_email, subject: 'Scam TIME!')
+    mail(to: email, subject: 'WG found')
   end
 end

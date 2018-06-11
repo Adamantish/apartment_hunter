@@ -64,7 +64,7 @@ class ApartmentScraper
         main_a = panel.css('a.detailansicht')
         ad_link = main_a.xpath("@href").first.to_s
         ad_title = main_a.children.first.inner_text.strip
-        maybe_inform(person.email, ad_title, ad_link)
+        maybe_inform(person, ad_title, ad_link)
       end
 
       scrape_record.update!(new_ads: @new_count)
@@ -80,14 +80,14 @@ class ApartmentScraper
       end
     end
 
-    def maybe_inform(email, title, link)
+    def maybe_inform(person, title, link)
       ad_link = "#{@domain}/#{link}"
-      apt = Apartment.find_or_initialize_by(ad_link: "#{@domain}/#{link}")
+      apt = Apartment.find_or_initialize_by(person_id: person.id, ad_link: "#{@domain}/#{link}")
 
       unless apt.persisted?
         @new_count += 1
         puts ad_link
-        MainMailer.new_scam(email, { title: title, link: ad_link }).deliver_now
+        MainMailer.new_scam(person.email, { title: title, link: ad_link }).deliver_now
         tell(ad_link) if @tell
         apt.update!(ad_title: title)
       end

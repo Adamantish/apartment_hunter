@@ -40,12 +40,11 @@ class ApartmentScraper
       @noisy = noisy
       @tell = tell
       @voice = 'Daniel'
+      @domain = 'https://www.wg-gesucht.de'
 
       @@people.each do |person|
         scrape_for(person: person)
       end
-      @domain = 'https://www.wg-gesucht.de'
-      
     end
 
     def scrape_for(person: person)
@@ -82,7 +81,7 @@ class ApartmentScraper
 
     def maybe_inform(person, title, link)
       ad_link = "#{@domain}/#{link}"
-      apt = Apartment.find_or_initialize_by(person_id: person.id, ad_link: "#{@domain}/#{link}")
+      apt = Apartment.find_or_initialize_by(person_id: person.id, ad_link: ad_link)
 
       unless apt.persisted?
         @new_count += 1

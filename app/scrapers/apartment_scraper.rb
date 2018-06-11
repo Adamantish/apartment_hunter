@@ -6,7 +6,7 @@ class ApartmentScraper
       @voice = 'Daniel'
 
       @domain = 'https://www.wg-gesucht.de'
-      url = 'https://www.wg-gesucht.de/wg-zimmer-in-Berlin.8.0.1.0.html?offer_filter=1&sort_column=0&noDeact=1&city_id=8&category=0&rent_type=0&sMin=19&rMax=500&dFr=1529964000&dTo=1532383200&radLat=52.5105357&radLng=13.434982699999978&radAdd=Ostbahnhof%2C+Koppenstrasse%2C+Berlin%2C+Deutschland&radDis=4000&wgSea=2&wgAge=33&sin=1'
+      url = 'https://www.wg-gesucht.de/wg-zimmer-in-Berlin.8.0.1.0.html?offer_filter=1&sort_column=0&noDeact=1&city_id=8&category=0&rent_type=0&sMin=17&rMax=500&dFr=1529964000&dTo=1532383200&radLat=52.5105357&radLng=13.434982699999978&radAdd=Ostbahnhof%2C+Koppenstrasse%2C+Berlin%2C+Deutschland&radDis=4000&wgSea=2&wgAge=33&sin=1'
       doc = Nokogiri::HTML(HTTParty.get(url))
 
       panels = doc.css('#main_column > .list-details-ad-border:not(.panel-hidden) .list-details-panel-inner')

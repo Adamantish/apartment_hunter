@@ -43,8 +43,6 @@ class ApartmentScraper
         end
       end
 
-      byebug
-
       scrape_record.ads = panels.count
 
       @new_count = 0

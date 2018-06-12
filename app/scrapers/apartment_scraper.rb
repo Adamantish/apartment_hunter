@@ -30,7 +30,25 @@ class ApartmentScraper
         false
       end
     end
-    }
+    },
+
+    'Florian' => { date_filter: lambda do |panel|  
+      begin
+        possible_end_date = panel.css('b').last.inner_text
+        if possible_end_date.length == 12
+          end_date = possible_end_date[2..-1].to_date
+          end_date >= 12.months.from_now
+        else
+          true
+        end
+      rescue StandardError => ex
+        puts ex
+        false
+      end
+    end
+    },
+
+
   }.freeze
 
   class << self

@@ -1,54 +1,11 @@
 class ApartmentScraper
   FINDERS = {
-    'York' => { date_filter: lambda do |panel|  
-      begin
-        possible_end_date = panel.css('b').last.inner_text
-        end_date = possible_end_date.length == 12 ? possible_end_date[2..-1].to_date : nil
-        if end_date
-          (1.month.from_now..4.months.from_now).include? end_date
-        else
-          false
-        end
-      rescue StandardError => ex
-        puts ex
-        false
-      end
-    end
+    'York' =>    { date_filter: ->(end_date){ end_date ? (1.month.from_now..4.months.from_now).include?(end_date) : false }
     },
-
-    'ME' => { date_filter: lambda do |panel|  
-      begin
-        possible_end_date = panel.css('b').last.inner_text
-        if possible_end_date.length == 12
-          end_date = possible_end_date[2..-1].to_date
-          end_date >= 3.months.from_now
-        else
-          true
-        end
-      rescue StandardError => ex
-        puts ex
-        false
-      end
-    end
+    'ME' =>      { date_filter: ->(end_date){ end_date ? end_date >= 3.months.from_now : true }
     },
-
-    'Florian' => { date_filter: lambda do |panel|  
-      begin
-        possible_end_date = panel.css('b').last.inner_text
-        if possible_end_date.length == 12
-          end_date = possible_end_date[2..-1].to_date
-          end_date >= 12.months.from_now
-        else
-          true
-        end
-      rescue StandardError => ex
-        puts ex
-        false
-      end
-    end
+    'Florian' => { date_filter: ->(end_date){ end_date ? end_date >= 12.months.from_now : true }
     },
-
-
   }.freeze
 
   class << self
@@ -68,16 +25,31 @@ class ApartmentScraper
     def scrape_for(person: person)
       doc = Nokogiri::HTML(HTTParty.get(person.search_url))
 
-      candidates = doc.css('#main_column > .list-details-ad-border:not(.panel-hidden) .list-details-panel-inner')
+      panels = doc.css('#main_column > .list-details-ad-border:not(.panel-hidden) .list-details-panel-inner')
       scrape_record = Scrape.create!
 
       date_filter = FINDERS[person.name][:date_filter]
-      candidates = candidates.select(&date_filter) if date_filter
-      scrape_record.ads = candidates.count
+
+      if date_filter
+        panels = panels.select do |panel|
+          begin
+            possible_end_date = panel.css('b').last.inner_text
+            end_date = possible_end_date.length == 12 ? possible_end_date[2..-1].to_date : nil
+            date_filter.call(end_date)
+          rescue StandardError => ex
+            puts ex
+            false
+          end
+        end
+      end
+
+      byebug
+
+      scrape_record.ads = panels.count
 
       @new_count = 0
 
-      candidates.each do |panel|
+      panels.each do |panel|
         main_a = panel.css('a.detailansicht')
         ad_link = main_a.xpath("@href").first.to_s
         ad_title = main_a.children.first.inner_text.strip

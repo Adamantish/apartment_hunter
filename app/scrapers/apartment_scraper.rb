@@ -50,11 +50,11 @@ class ApartmentScraper
     def scrape_for(person: person)
       doc = Nokogiri::HTML(HTTParty.get(person.search_url))
 
-      panels = doc.css('#main_column > .list-details-ad-border:not(.panel-hidden) .list-details-panel-inner')
+      candidates = doc.css('#main_column > .list-details-ad-border:not(.panel-hidden) .list-details-panel-inner')
       scrape_record = Scrape.create!
 
       date_filter = FINDERS[person.name][:date_filter]
-      candidates = panels.select(&date_filter)
+      candidates = candidates.select(&date_filter) if date_filter
       scrape_record.ads = candidates.count
 
       @new_count = 0

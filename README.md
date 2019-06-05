@@ -1,24 +1,5 @@
-# README
+# Scrapes immoscout 24 to get there first
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Immoscout lets you setup saved searches where they'll alert you. But for the diamonds you probably won't receive those fast enough to be the first interested person.
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+I threw this together in a scrappy way for myself and a few colleagues. See if you can customise it to your needs. 
